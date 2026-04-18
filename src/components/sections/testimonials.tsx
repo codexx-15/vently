@@ -13,7 +13,7 @@ export function Testimonials() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {visibleFeedbacks.map((t, i) => (
           <motion.div
-            key={t.id}
+            key={t._id || i}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
