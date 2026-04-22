@@ -42,7 +42,6 @@ const YogaAsanaSchema = new Schema({
   name: { type: String, required: true },
   images: [{ type: String, required: true }], // Changed from image to images
   benefits: [{ type: String }],
-  howItHelps: { type: String },
   bodyParts: [{ type: String }],
   youtubeLink: { type: String },
 }, { timestamps: true });

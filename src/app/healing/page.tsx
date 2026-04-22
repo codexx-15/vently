@@ -149,9 +149,7 @@ function YogaSection() {
 
   const filteredAsanas = asanas.filter(a => {
     const name = a.name || ""
-    const helps = a.howItHelps || ""
-    const matchesSearch = name.toLowerCase().includes(search.toLowerCase()) || 
-                         helps.toLowerCase().includes(search.toLowerCase())
+    const matchesSearch = name.toLowerCase().includes(search.toLowerCase())
     const matchesFilter = filter === "All" || (Array.isArray(a.bodyParts) && a.bodyParts.includes(filter))
     return matchesSearch && matchesFilter
   })
@@ -219,9 +217,6 @@ function YogaSection() {
                     +{a.images.length - 1} photos
                   </div>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
-                   <p className="text-white text-sm font-medium">{a.howItHelps}</p>
-                </div>
               </div>
               <CardContent className="p-6 space-y-4 flex-1 flex flex-col">
                 <div className="flex items-center justify-between">

@@ -23,7 +23,6 @@ export default function AdminPage() {
     name: "",
     images: [] as string[],
     benefits: "",
-    howItHelps: "",
     bodyParts: "",
     youtubeLink: ""
   })
@@ -215,7 +214,7 @@ export default function AdminPage() {
         body: JSON.stringify(editingItem ? { id: editingItem._id, ...payload } : payload),
       })
       if (res.ok) {
-        setNewAsana({ name: "", images: [], benefits: "", howItHelps: "", bodyParts: "", youtubeLink: "" })
+        setNewAsana({ name: "", images: [], benefits: "", bodyParts: "", youtubeLink: "" })
         setEditingItem(null)
         fetchAsanas()
       }
@@ -823,11 +822,6 @@ export default function AdminPage() {
                             onChange={e => editingItem ? setEditingItem({...editingItem, benefits: e.target.value}) : setNewAsana({...newAsana, benefits: e.target.value})}
                           />
                           <Input 
-                            placeholder="How it helps" 
-                            value={editingItem ? editingItem.howItHelps : newAsana.howItHelps}
-                            onChange={e => editingItem ? setEditingItem({...editingItem, howItHelps: e.target.value}) : setNewAsana({...newAsana, howItHelps: e.target.value})}
-                          />
-                          <Input 
                             placeholder="Body Parts (comma separated)" 
                             value={editingItem ? (Array.isArray(editingItem.bodyParts) ? editingItem.bodyParts.join(', ') : editingItem.bodyParts) : newAsana.bodyParts}
                             onChange={e => editingItem ? setEditingItem({...editingItem, bodyParts: e.target.value}) : setNewAsana({...newAsana, bodyParts: e.target.value})}
@@ -898,7 +892,6 @@ export default function AdminPage() {
                               </a>
                             )}
                           </div>
-                          <p className="text-sm text-text-secondary line-clamp-2">{a.howItHelps}</p>
                           <div className="flex flex-wrap gap-1">
                             {a.bodyParts.map((p: string, i: number) => (
                               <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-brand-purple/10 text-brand-purple font-bold">
