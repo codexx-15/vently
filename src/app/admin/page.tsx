@@ -11,18 +11,29 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Image as ImageIcon, MessageSquare, Eye, EyeOff, Trash2, Plus, LayoutDashboard, Settings, Heart as YogaIcon, ExternalLink, Brain as MeditationIcon, Upload, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
+type Asana = {
+  _id?: string
+  name: string
+  images: string[]
+  benefits: string
+  howItHelps: string
+  bodyParts: string
+  youtubeLink: string
+}
+
 export default function AdminPage() {
   const { settings, setSettings, feedbacks, setFeedbacks, isAdmin, refreshData } = useGlobalState()
   const [activeTab, setActiveTab] = React.useState<'images' | 'feedback' | 'overview' | 'yoga' | 'meditation' | 'general'>('overview')
   const [asanas, setAsanas] = React.useState<any[]>([])
   const [meditations, setMeditations] = React.useState<any[]>([])
   const [isUploading, setIsUploading] = React.useState(false)
-  const [editingItem, setEditingItem] = React.useState<any | null>(null)
+  const [editingItem, setEditingItem] = React.useState<Asana | any | null>(null)
   
-  const [newAsana, setNewAsana] = React.useState({
+  const [newAsana, setNewAsana] = React.useState<Asana>({
     name: "",
-    images: [] as string[],
+    images: [],
     benefits: "",
+    howItHelps: "",
     bodyParts: "",
     youtubeLink: ""
   })
@@ -214,7 +225,7 @@ export default function AdminPage() {
         body: JSON.stringify(editingItem ? { id: editingItem._id, ...payload } : payload),
       })
       if (res.ok) {
-        setNewAsana({ name: "", images: [], benefits: "", bodyParts: "", youtubeLink: "" })
+        setNewAsana({ name: "", images: [], benefits: "", howItHelps: "", bodyParts: "", youtubeLink: "" })
         setEditingItem(null)
         fetchAsanas()
       }
@@ -822,6 +833,11 @@ export default function AdminPage() {
                             onChange={e => editingItem ? setEditingItem({...editingItem, benefits: e.target.value}) : setNewAsana({...newAsana, benefits: e.target.value})}
                           />
                           <Input 
+                            placeholder="How it helps" 
+                            value={editingItem ? editingItem.howItHelps : newAsana.howItHelps}
+                            onChange={e => editingItem ? setEditingItem({...editingItem, howItHelps: e.target.value}) : setNewAsana({...newAsana, howItHelps: e.target.value})}
+                          />
+                          <Input 
                             placeholder="Body Parts (comma separated)" 
                             value={editingItem ? (Array.isArray(editingItem.bodyParts) ? editingItem.bodyParts.join(', ') : editingItem.bodyParts) : newAsana.bodyParts}
                             onChange={e => editingItem ? setEditingItem({...editingItem, bodyParts: e.target.value}) : setNewAsana({...newAsana, bodyParts: e.target.value})}
@@ -892,6 +908,7 @@ export default function AdminPage() {
                               </a>
                             )}
                           </div>
+                          <p className="text-sm text-text-secondary line-clamp-2">{a.howItHelps}</p>
                           <div className="flex flex-wrap gap-1">
                             {a.bodyParts.map((p: string, i: number) => (
                               <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-brand-purple/10 text-brand-purple font-bold">
