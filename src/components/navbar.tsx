@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation"
 
 export function Navbar() {
   const [scrolled, setScrolled] = React.useState(false)
-  const { user, isLoggedIn, isAdmin, refreshData } = useGlobalState()
+  const { user, isLoggedIn, isAdmin, refreshData, settings } = useGlobalState()
   const router = useRouter()
 
   React.useEffect(() => {
@@ -49,50 +49,67 @@ export function Navbar() {
   const handleLogoClick = (e: React.MouseEvent) => {
     if (window.location.pathname === '/') {
       e.preventDefault()
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+      window.scrollTo({ top: 0, behavior: 'auto' })
     }
   }
 
   return (
     <nav
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 flex h-20 items-center justify-center transition-all duration-300",
-        scrolled ? "bg-background/80 backdrop-blur-md border-b border-border h-16" : "bg-transparent"
+        "fixed top-0 left-0 right-0 z-50 flex h-24 items-center justify-center transition-all duration-500",
+        scrolled ? "h-20" : "bg-transparent"
       )}
     >
-      <div className="container flex items-center justify-between px-6 max-w-[1440px]">
-        <Link href="/" onClick={handleLogoClick}>
-          <Logo />
+      <div className={cn(
+        "container flex items-center justify-between px-6 max-w-[1200px] transition-all duration-500 rounded-full mx-6",
+        scrolled ? "bg-white/40 dark:bg-black/40 backdrop-blur-2xl border border-white/40 dark:border-white/10 shadow-lg py-3 px-8" : "py-4"
+      )}>
+        <Link href="/" onClick={handleLogoClick} className="flex items-center gap-2 group transition-all">
+          {settings?.logo && settings.logo.trim() !== "" ? (
+            <img 
+              src={settings.logo} 
+              alt={settings.siteName} 
+              className={cn("h-8 w-auto transition-all duration-300", scrolled ? "scale-90" : "scale-100")} 
+            />
+          ) : (
+            <Logo className={cn("transition-all duration-300", scrolled ? "scale-90" : "scale-100")} />
+          )}
+          <span className="text-2xl font-black tracking-tighter text-foreground group-hover:text-brand-purple transition-colors">
+            {settings?.siteName || "Vently"}
+          </span>
         </Link>
 
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-text-secondary">
+        <div className="hidden md:flex items-center gap-8 text-sm font-bold text-text-secondary/80">
+          <Link href="/healing" className="hover:text-brand-purple transition-all">
+            Healing Space
+          </Link>
           <a 
             href="#features" 
             onClick={(e) => scrollToSection(e, "features")}
-            className="hover:text-text-primary transition-colors cursor-pointer"
+            className="hover:text-brand-purple transition-all cursor-pointer"
           >
             Features
           </a>
-          <Link href="/login" className="hover:text-text-primary transition-colors">
+          <Link href="/login" className="hover:text-brand-purple transition-all">
             How it Works
           </Link>
           
           {isLoggedIn ? (
-            <div className="flex items-center gap-6 border-l border-border pl-6">
+            <div className="flex items-center gap-6 border-l border-white/20 pl-6">
               {isAdmin && (
-                <Link href="/admin" className="flex items-center gap-2 hover:text-text-primary transition-colors">
+                <Link href="/admin" className="flex items-center gap-2 hover:text-brand-purple transition-all">
                   <ShieldCheck className="w-4 h-4" /> Admin
                 </Link>
               )}
-              <Link href="/profile" className="flex items-center gap-2 hover:text-text-primary transition-colors">
-                <div className="w-8 h-8 rounded-full overflow-hidden border border-border">
+              <Link href="/profile" className="flex items-center gap-2 hover:text-brand-purple transition-all group">
+                <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-white/40 dark:border-white/10 group-hover:border-brand-purple transition-all">
                   <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
                 </div>
-                Profile
+                <span>Profile</span>
               </Link>
               <button 
                 onClick={handleLogout}
-                className="text-xs font-bold text-red-500 hover:text-red-600 transition-colors uppercase tracking-widest"
+                className="text-[10px] font-black text-red-500/80 hover:text-red-500 transition-all uppercase tracking-widest border border-red-500/20 px-3 py-1.5 rounded-full"
               >
                 Logout
               </button>

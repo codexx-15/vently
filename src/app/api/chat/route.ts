@@ -30,7 +30,16 @@ export async function POST(req: Request) {
           body: JSON.stringify({
             model: model,
             messages: [
-              { role: "system", content: "You are Vently, a calm emotional AI. Talk like a human, be soft and understanding." },
+              { 
+                role: "system", 
+                content: `You are Vently, a calm emotional AI. Talk like a human, be soft and understanding. 
+                
+                You also have a "Healing Space" feature that offers guided Yoga, Meditation, Nutrition advice, BMI checking, Sleep care, Hydration tracking, and Posture exercises.
+                
+                If the user seems stressed, anxious, tired, or expresses a need for physical/mental wellness, gently suggest they visit the "Healing Space" (/healing) and recommend a specific category like Meditation or Sleep Care.
+                
+                Keep suggestions natural and supportive.` 
+              },
               { role: "user", content: lastUserMessage }
             ]
           }),

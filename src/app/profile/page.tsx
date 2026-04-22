@@ -8,12 +8,38 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 import { motion } from "framer-motion"
-import { Camera, User, Mail, Phone, MapPin, CheckCircle2 } from "lucide-react"
+import { Camera, User, Mail, Phone, MapPin, CheckCircle2, Loader2 } from "lucide-react"
+import { cn } from "@/lib/utils"
+
+import { GlassBackground } from "@/components/ui/glass-background"
 
 export default function ProfilePage() {
   const { user, setUser } = useGlobalState()
-  const [formData, setFormData] = React.useState(user)
+  const [formData, setFormData] = React.useState({
+    ...user,
+    name: user?.name || "",
+    email: user?.email || "",
+    phone: user?.phone || "",
+    address: user?.address || "",
+    avatar: user?.avatar || ""
+  })
   const [isSaved, setIsSaved] = React.useState(false)
+  const [isUploading, setIsUploading] = React.useState(false)
+
+  // Update formData if user state changes
+  React.useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        ...user,
+        name: user.name || prev.name,
+        email: user.email || prev.email,
+        phone: user.phone || prev.phone,
+        address: user.address || prev.address,
+        avatar: user.avatar || prev.avatar
+      }))
+    }
+  }, [user])
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -35,112 +61,151 @@ export default function ProfilePage() {
     }
   }
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setFormData({ ...formData, avatar: reader.result as string })
+    if (!file) return
+
+    setIsUploading(true)
+    const formDataUpload = new FormData()
+    formDataUpload.append('file', file)
+
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formDataUpload,
+      })
+      const data = await res.json()
+      if (res.ok) {
+        setFormData({ ...formData, avatar: data.secure_url })
       }
-      reader.readAsDataURL(file)
+    } catch (error) {
+      console.error('Upload failed:', error)
+    } finally {
+      setIsUploading(false)
     }
   }
 
   return (
-    <main className="min-h-screen flex flex-col bg-background">
+    <main className="min-h-screen flex flex-col relative overflow-hidden">
+      <GlassBackground />
       <Navbar />
-      <div className="flex-1 pt-32 pb-24 px-6">
-        <div className="max-w-[800px] mx-auto space-y-8">
+      
+      <div className="flex-1 pt-32 pb-24 px-6 relative z-10">
+        <div className="max-w-[900px] mx-auto space-y-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            className="text-center md:text-left"
           >
-            <h1 className="text-4xl font-bold text-text-primary mb-2">Your Profile</h1>
-            <p className="text-text-secondary">Manage your personal information and safety settings.</p>
+            <h1 className="text-5xl font-black tracking-tighter text-foreground mb-4">
+              Your <span className="bg-gradient-to-r from-brand-pink to-brand-purple bg-clip-text text-transparent">Profile</span>
+            </h1>
+            <p className="text-xl text-text-secondary/80 font-medium">Manage your personal information and safety settings.</p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {/* Sidebar / Avatar */}
-            <div className="md:col-span-1 space-y-6">
-              <Card className="border-border bg-card/50 backdrop-blur-sm overflow-hidden">
-                <CardContent className="pt-8 flex flex-col items-center">
+            <div className="md:col-span-1">
+              <Card className="bg-white/20 dark:bg-black/20 backdrop-blur-3xl border-white/40 dark:border-white/5 shadow-2xl rounded-[40px] overflow-hidden sticky top-32">
+                <CardContent className="pt-12 pb-10 flex flex-col items-center">
                   <div className="relative group">
-                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-secondary group-hover:border-foreground transition-all">
-                      <img src={formData.avatar} alt={formData.name} className="w-full h-full object-cover" />
+                    <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-white/40 dark:border-white/10 bg-white/20 dark:bg-black/20 shadow-inner group-hover:border-brand-pink transition-all duration-500 flex items-center justify-center">
+                      {isUploading ? (
+                        <Loader2 className="w-10 h-10 animate-spin text-brand-pink" />
+                      ) : (
+                        <img src={formData.avatar} alt={formData.name} className="w-full h-full object-cover" />
+                      )}
                     </div>
-                    <label className="absolute bottom-0 right-0 bg-foreground text-background p-2 rounded-full cursor-pointer shadow-lg hover:scale-110 transition-transform">
-                      <Camera className="w-4 h-4" />
-                      <input type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
+                    <label className={cn(
+                      "absolute bottom-1 right-1 bg-gradient-to-br from-brand-pink to-brand-purple text-white p-3 rounded-full cursor-pointer shadow-xl hover:scale-110 transition-transform",
+                      isUploading && "opacity-50 cursor-not-allowed"
+                    )}>
+                      <Camera className="w-5 h-5" />
+                      <input type="file" className="hidden" accept="image/*" onChange={handleImageChange} disabled={isUploading} />
                     </label>
                   </div>
-                  <h3 className="mt-4 text-xl font-bold text-text-primary">{user.name}</h3>
-                  <p className="text-sm text-text-secondary">Member since 2024</p>
+                  <h3 className="mt-6 text-2xl font-black text-foreground">{user.name}</h3>
+                  <div className="mt-2 px-4 py-1.5 rounded-full bg-brand-pink/10 border border-brand-pink/20 text-brand-pink text-xs font-bold uppercase tracking-widest">
+                    Vently Member
+                  </div>
                 </CardContent>
               </Card>
             </div>
 
             {/* Main Details */}
             <div className="md:col-span-2">
-              <Card className="border-border bg-card/50 backdrop-blur-sm">
-                <CardHeader>
-                  <CardTitle>Personal Details</CardTitle>
-                  <CardDescription>Update your information. This is kept strictly private.</CardDescription>
+              <Card className="bg-white/20 dark:bg-black/20 backdrop-blur-3xl border-white/40 dark:border-white/5 shadow-2xl rounded-[40px]">
+                <CardHeader className="pb-8">
+                  <CardTitle className="text-2xl font-bold">Personal Details</CardTitle>
+                  <CardDescription className="text-text-secondary/70 font-medium">Update your information. This is kept strictly private.</CardDescription>
                 </CardHeader>
                 <form onSubmit={handleSave}>
-                  <CardContent className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <CardContent className="space-y-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <label className="text-sm font-medium flex items-center gap-2">
-                          <User className="w-3 h-3" /> Full Name
+                        <label className="text-xs font-bold uppercase tracking-wider text-brand-pink/70 px-1">
+                          Full Name
                         </label>
                         <Input 
                           value={formData.name} 
                           onChange={(e) => setFormData({...formData, name: e.target.value})}
+                          className="h-14 bg-white/30 dark:bg-black/30 border-white/40 dark:border-white/10 focus:border-brand-purple/50 rounded-2xl text-lg font-medium transition-all"
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-medium flex items-center gap-2">
-                          <Mail className="w-3 h-3" /> Email Address
+                        <label className="text-xs font-bold uppercase tracking-wider text-brand-pink/70 px-1">
+                          Email Address
                         </label>
                         <Input 
                           type="email" 
                           value={formData.email} 
                           onChange={(e) => setFormData({...formData, email: e.target.value})}
+                          className="h-14 bg-white/30 dark:bg-black/30 border-white/40 dark:border-white/10 focus:border-brand-purple/50 rounded-2xl text-lg font-medium transition-all"
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-medium flex items-center gap-2">
-                          <Phone className="w-3 h-3" /> Phone Number
+                        <label className="text-xs font-bold uppercase tracking-wider text-brand-pink/70 px-1">
+                          Phone Number
                         </label>
                         <Input 
                           value={formData.phone} 
                           onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                          className="h-14 bg-white/30 dark:bg-black/30 border-white/40 dark:border-white/10 focus:border-brand-purple/50 rounded-2xl text-lg font-medium transition-all"
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-medium flex items-center gap-2">
-                          <MapPin className="w-3 h-3" /> Address
+                        <label className="text-xs font-bold uppercase tracking-wider text-brand-pink/70 px-1">
+                          Address
                         </label>
                         <Input 
                           value={formData.address} 
                           onChange={(e) => setFormData({...formData, address: e.target.value})}
+                          className="h-14 bg-white/30 dark:bg-black/30 border-white/40 dark:border-white/10 focus:border-brand-purple/50 rounded-2xl text-lg font-medium transition-all"
                         />
                       </div>
                     </div>
                   </CardContent>
-                  <CardFooter className="flex justify-between items-center">
-                    <p className="text-xs text-text-secondary italic">Your data is encrypted end-to-end.</p>
-                    <div className="flex items-center gap-4">
+                  <CardFooter className="flex flex-col md:flex-row justify-between items-center gap-6 pt-10 pb-12">
+                    <div className="flex items-center gap-2 text-text-secondary/50">
+                      <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                      <p className="text-xs font-bold uppercase tracking-widest">End-to-End Encrypted</p>
+                    </div>
+                    <div className="flex items-center gap-6">
                       {isSaved && (
                         <motion.span 
                           initial={{ opacity: 0, x: 10 }} 
                           animate={{ opacity: 1, x: 0 }} 
-                          className="text-sm text-green-500 flex items-center gap-1"
+                          className="text-sm font-bold text-green-500 flex items-center gap-2"
                         >
-                          <CheckCircle2 className="w-4 h-4" /> Changes saved
+                          <CheckCircle2 className="w-5 h-5" /> Saved
                         </motion.span>
                       )}
-                      <Button type="submit">Save Changes</Button>
+                      <Button 
+                        type="submit"
+                        className="h-14 px-10 rounded-[20px] bg-gradient-to-r from-brand-pink to-brand-purple text-white font-bold text-lg hover:scale-105 transition-all shadow-xl shadow-brand-pink/20"
+                      >
+                        Save Changes
+                      </Button>
                     </div>
                   </CardFooter>
                 </form>

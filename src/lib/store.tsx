@@ -21,7 +21,16 @@ export type Feedback = {
 }
 
 export type SiteSettings = {
+  siteName: string
+  logo?: string
+  footerText: string
+  socialLinks: {
+    instagram: string
+    twitter: string
+    linkedin: string
+  }
   heroImages: string[]
+  heroVideos: string[]
   emotionalImages: string[]
 }
 
@@ -50,7 +59,16 @@ const DEFAULT_USER: UserProfile = {
 }
 
 const DEFAULT_SETTINGS: SiteSettings = {
+  siteName: "Vently",
+  logo: "",
+  footerText: "Your safe space to vent, reflect, and be understood. Built for a calmer, more human connection.",
+  socialLinks: {
+    instagram: "#",
+    twitter: "#",
+    linkedin: "#"
+  },
   heroImages: ["https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=1200&auto=format&fit=crop"],
+  heroVideos: [],
   emotionalImages: [
     "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=1200&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1516062423079-7ca13cdc7f5a?q=80&w=1200&auto=format&fit=crop",
@@ -68,38 +86,43 @@ export function GlobalStateProvider({ children }: { children: React.ReactNode })
 
   const refreshData = async () => {
     try {
-      // Fetch settings
-      const settingsRes = await fetch('/api/admin/settings');
+      const storedEmail = localStorage.getItem('vently_user_email');
+      const token = localStorage.getItem('vently_token');
+
+      const [settingsRes, feedbackRes, userRes] = await Promise.all([
+        fetch('/api/admin/settings'),
+        fetch('/api/admin/feedback'),
+        storedEmail && token ? fetch(`/api/user?email=${storedEmail}`) : Promise.resolve(null)
+      ]);
+
       if (settingsRes.ok) {
         const settingsData = await settingsRes.json();
-        setSettings(settingsData);
+        setSettings({
+          ...DEFAULT_SETTINGS,
+          ...settingsData,
+          socialLinks: {
+            ...DEFAULT_SETTINGS.socialLinks,
+            ...(settingsData.socialLinks || {})
+          }
+        });
       }
 
-      // Fetch feedback
-      const feedbackRes = await fetch('/api/admin/feedback');
       if (feedbackRes.ok) {
         const feedbackData = await feedbackRes.json();
         setFeedbacks(feedbackData);
       }
 
-      // Fetch user profile if logged in
-      const storedEmail = localStorage.getItem('vently_user_email');
-      const token = localStorage.getItem('vently_token');
-      
-      if (storedEmail && token) {
-        const userRes = await fetch(`/api/user?email=${storedEmail}`);
-        if (userRes.ok) {
-          const userData = await userRes.json();
-          setUser(userData);
-          setIsLoggedIn(true);
-          setIsAdmin(userData.role === 'admin' || userData.email === 'alex@example.com');
-        } else {
-          // Token might be invalid or user deleted
-          localStorage.removeItem('vently_token');
-          localStorage.removeItem('vently_user_email');
-          setIsLoggedIn(false);
-          setIsAdmin(false);
-        }
+      if (userRes && userRes.ok) {
+        const userData = await userRes.json();
+        setUser(userData);
+        setIsLoggedIn(true);
+        setIsAdmin(userData.role === 'admin' || userData.email === 'alex@example.com');
+      } else if (storedEmail && token) {
+        // Token might be invalid or user deleted
+        localStorage.removeItem('vently_token');
+        localStorage.removeItem('vently_user_email');
+        setIsLoggedIn(false);
+        setIsAdmin(false);
       } else {
         setIsLoggedIn(false);
         setIsAdmin(false);

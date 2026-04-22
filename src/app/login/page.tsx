@@ -3,19 +3,21 @@
 import * as React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Logo } from "@/components/ui/logo"
+import { motion } from "framer-motion"
+import { ArrowLeft, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
-import { motion } from "framer-motion"
-import { Loader2, ArrowLeft } from "lucide-react"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Logo } from "@/components/ui/logo"
 import { useGlobalState } from "@/lib/store"
+import { GlassBackground } from "@/components/ui/glass-background"
 
 export default function LoginPage() {
   const router = useRouter()
   const { refreshData } = useGlobalState()
   const [isLoading, setIsLoading] = React.useState(false)
   const [error, setError] = React.useState("")
+  
   const [email, setEmail] = React.useState("")
   const [password, setPassword] = React.useState("")
   const [otp, setOtp] = React.useState("")
@@ -86,42 +88,45 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-6 bg-background relative overflow-hidden">
-      {/* Background Decor */}
-      <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-foreground/[0.03] rounded-full blur-3xl" />
-      </div>
+    <main className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden">
+      <GlassBackground />
 
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-[450px]"
+        className="w-full max-w-[450px] z-10"
       >
         <div className="mb-8 flex flex-col items-center gap-4">
-          <Link href="/" className="flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors text-sm mb-4">
+          <Link href="/" className="flex items-center gap-2 text-text-secondary hover:text-brand-purple transition-colors text-sm mb-4">
             <ArrowLeft className="h-4 w-4" />
             Back to home
           </Link>
           <Logo className="text-4xl" />
         </div>
 
-        <Card className="border-border shadow-xl bg-card/50 backdrop-blur-md">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-center">Welcome back</CardTitle>
-            <CardDescription className="text-center">
-              {isOtpMode ? "Enter the OTP sent to your email" : "Enter your credentials to access your safe space"}
+        <Card className="bg-white/20 dark:bg-black/20 backdrop-blur-3xl border-white/40 dark:border-white/5 shadow-[0_8px_32px_0_rgba(255,182,193,0.15)] rounded-[32px]">
+          <CardHeader className="space-y-1 pb-4">
+            <CardTitle className="text-3xl text-center font-bold tracking-tight text-foreground/90">
+              Sign In
+            </CardTitle>
+            <CardDescription className="text-center text-text-secondary/70">
+              {isOtpMode ? "Enter the OTP sent to your email" : "Welcome back to your safe space"}
             </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-5">
               {error && (
-                <div className="p-3 text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-lg text-center">
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="p-3 text-sm text-brand-pink bg-brand-pink/10 border border-brand-pink/20 rounded-2xl text-center backdrop-blur-md"
+                >
                   {error}
-                </div>
+                </motion.div>
               )}
               <div className="space-y-2">
-                <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                <label className="text-sm font-medium text-brand-pink/60 px-1 uppercase tracking-wider">
                   Email
                 </label>
                 <div className="flex gap-2">
@@ -132,7 +137,7 @@ export default function LoginPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     disabled={isLoading || isOtpSent}
-                    className="flex-1"
+                    className="flex-1 bg-white/20 dark:bg-black/20 border-white/30 dark:border-white/5 focus:border-brand-purple/50 focus:ring-2 focus:ring-brand-purple/10 transition-all rounded-2xl h-12 text-foreground"
                   />
                   {!isOtpMode && !isOtpSent && (
                     <Button 
@@ -141,6 +146,7 @@ export default function LoginPage() {
                       size="sm" 
                       onClick={handleSendOtp}
                       disabled={isLoading || !email}
+                      className="rounded-2xl border-white/30 dark:border-white/10 bg-white/10 dark:bg-white/5 hover:bg-brand-pink/20 hover:text-brand-pink transition-all h-12"
                     >
                       Send OTP
                     </Button>
@@ -150,8 +156,8 @@ export default function LoginPage() {
 
               {isOtpMode ? (
                 <div className="space-y-2">
-                  <label className="text-sm font-medium leading-none">
-                    Enter OTP
+                  <label className="text-sm font-medium text-brand-pink/60 px-1 uppercase tracking-wider">
+                    Verification Code
                   </label>
                   <Input
                     type="text"
@@ -161,7 +167,7 @@ export default function LoginPage() {
                     required
                     maxLength={6}
                     disabled={isLoading}
-                    className="text-center text-2xl tracking-[10px] font-bold"
+                    className="text-center text-2xl tracking-[12px] font-bold bg-white/20 dark:bg-black/20 border-white/30 dark:border-white/5 focus:border-brand-purple/50 rounded-2xl h-14"
                   />
                   <button 
                     type="button"
@@ -170,18 +176,18 @@ export default function LoginPage() {
                       setIsOtpSent(false)
                       setOtp("")
                     }}
-                    className="text-xs text-text-secondary hover:text-text-primary underline"
+                    className="text-xs text-brand-purple hover:text-brand-pink transition-colors underline px-1"
                   >
                     Back to Password Login
                   </button>
                 </div>
               ) : (
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                  <div className="flex items-center justify-between px-1">
+                    <label className="text-sm font-medium text-brand-pink/60 uppercase tracking-wider">
                       Password
                     </label>
-                    <Link href="#" className="text-xs text-text-secondary hover:underline">
+                    <Link href="#" className="text-xs text-text-secondary/60 hover:text-brand-purple transition-colors">
                       Forgot password?
                     </Link>
                   </div>
@@ -192,43 +198,49 @@ export default function LoginPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     disabled={isLoading}
+                    className="bg-white/20 dark:bg-black/20 border-white/30 dark:border-white/5 focus:border-brand-purple/50 focus:ring-2 focus:ring-brand-purple/10 transition-all rounded-2xl h-12 text-foreground"
                   />
                 </div>
               )}
 
-              <div className="flex items-center space-x-2 pt-2">
+              <div className="flex items-center space-x-2 pt-1 px-1">
                 <input 
                   type="checkbox" 
                   id="adminLogin" 
                   checked={isAdminLogin}
                   onChange={(e) => setIsAdminLogin(e.target.checked)}
-                  className="w-4 h-4 rounded border-border bg-card text-foreground focus:ring-0 focus:ring-offset-0"
+                  className="w-4 h-4 rounded-lg border-white/40 bg-white/20 text-brand-purple focus:ring-brand-purple/50"
                 />
                 <label 
                   htmlFor="adminLogin" 
-                  className="text-sm font-medium leading-none cursor-pointer text-text-secondary hover:text-text-primary transition-colors"
+                  className="text-sm font-medium cursor-pointer text-text-secondary/70 hover:text-brand-purple transition-colors"
                 >
                   Login as Admin
                 </label>
               </div>
             </CardContent>
-            <CardFooter className="flex flex-col gap-4">
-              <Button type="submit" className="w-full h-12 text-lg rounded-xl" disabled={isLoading}>
+            <CardFooter className="flex flex-col gap-6 pt-2">
+              <Button 
+                type="submit" 
+                className="w-full h-12 text-lg font-semibold rounded-2xl bg-gradient-to-r from-brand-pink/80 to-brand-pink hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-brand-pink/20 text-white" 
+                disabled={isLoading}
+              >
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {isOtpMode ? "Verifying OTP..." : "Signing in..."}
+                    {isOtpMode ? "Verifying..." : "Signing in..."}
                   </>
                 ) : (
-                  isOtpMode ? "Verify & Login" : "Sign In"
+                  isOtpMode ? "Verify & Login" : "Login"
                 )}
               </Button>
-              <div className="text-sm text-center text-text-secondary">
-                Don&apos;t have an account?{" "}
-                <Link href="/register" className="text-text-primary font-medium hover:underline">
-                  Create one
+              
+              <p className="text-center text-sm text-text-secondary/70">
+                Don't have an account?{" "}
+                <Link href="/register" className="text-brand-purple font-semibold hover:text-brand-pink transition-colors underline-offset-4 hover:underline">
+                  Sign up
                 </Link>
-              </div>
+              </p>
             </CardFooter>
           </form>
         </Card>

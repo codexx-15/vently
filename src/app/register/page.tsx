@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 import { motion } from "framer-motion"
 import { Loader2, ArrowLeft, Camera } from "lucide-react"
+import { GlassBackground } from "@/components/ui/glass-background"
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -59,69 +60,74 @@ export default function RegisterPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-6 bg-background relative overflow-hidden">
-      <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-foreground/[0.03] rounded-full blur-3xl" />
-      </div>
+    <main className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden">
+      <GlassBackground />
 
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-[450px]"
+        className="w-full max-w-[450px] z-10"
       >
         <div className="mb-8 flex flex-col items-center gap-4">
-          <Link href="/" className="flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors text-sm mb-4">
+          <Link href="/" className="flex items-center gap-2 text-text-secondary hover:text-brand-purple transition-colors text-sm mb-4">
             <ArrowLeft className="h-4 w-4" />
             Back to home
           </Link>
           <Logo className="text-4xl" />
         </div>
 
-        <Card className="border-border shadow-xl bg-card/50 backdrop-blur-md">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-center">Create account</CardTitle>
-            <CardDescription className="text-center">
+        <Card className="bg-white/20 dark:bg-black/20 backdrop-blur-3xl border-white/40 dark:border-white/5 shadow-[0_8px_32px_0_rgba(255,182,193,0.15)] rounded-[32px]">
+          <CardHeader className="space-y-1 pb-4">
+            <CardTitle className="text-3xl text-center font-bold tracking-tight text-foreground/90">
+              Create Account
+            </CardTitle>
+            <CardDescription className="text-center text-text-secondary/70">
               Join Vently for your safe emotional space
             </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
               {error && (
-                <div className="p-3 text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-lg text-center">
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="p-3 text-sm text-brand-pink bg-brand-pink/10 border border-brand-pink/20 rounded-2xl text-center backdrop-blur-md"
+                >
                   {error}
-                </div>
+                </motion.div>
               )}
               
-              <div className="flex flex-col items-center gap-4 mb-4">
+              <div className="flex flex-col items-center gap-3 mb-4">
                 <div className="relative group">
-                  <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-border bg-secondary flex items-center justify-center">
+                  <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-white/40 dark:border-white/5 bg-white/20 dark:bg-black/20 flex items-center justify-center transition-all group-hover:border-brand-purple/50 shadow-inner">
                     {formData.avatar ? (
                       <img src={formData.avatar} alt="Avatar" className="w-full h-full object-cover" />
                     ) : (
-                      <Camera className="w-8 h-8 text-text-secondary" />
+                      <Camera className="w-8 h-8 text-text-secondary group-hover:text-brand-purple transition-colors" />
                     )}
                   </div>
-                  <label className="absolute bottom-0 right-0 bg-foreground text-background p-1.5 rounded-full cursor-pointer shadow-lg hover:scale-110 transition-transform">
-                    <Camera className="w-3 h-3" />
+                  <label className="absolute bottom-0 right-0 bg-gradient-to-br from-brand-pink to-brand-purple text-white p-2.5 rounded-full cursor-pointer shadow-lg hover:scale-110 transition-transform">
+                    <Camera className="w-4 h-4" />
                     <input type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
                   </label>
                 </div>
-                <p className="text-xs text-text-secondary">Upload profile picture (optional)</p>
+                <p className="text-[10px] uppercase tracking-wider font-bold text-text-secondary/40">Profile Picture</p>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Full Name</label>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-brand-pink/60 px-1 uppercase tracking-wider">Full Name</label>
                 <Input
                   placeholder="John Doe"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
                   disabled={isLoading}
+                  className="bg-white/20 dark:bg-black/20 border-white/30 dark:border-white/5 focus:border-brand-purple/50 focus:ring-2 focus:ring-brand-purple/10 transition-all rounded-2xl h-12 text-foreground"
                 />
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Email</label>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-brand-pink/60 px-1 uppercase tracking-wider">Email</label>
                 <Input
                   type="email"
                   placeholder="name@example.com"
@@ -129,10 +135,11 @@ export default function RegisterPage() {
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   required
                   disabled={isLoading}
+                  className="bg-white/20 dark:bg-black/20 border-white/30 dark:border-white/5 focus:border-brand-purple/50 focus:ring-2 focus:ring-brand-purple/10 transition-all rounded-2xl h-12 text-foreground"
                 />
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Password</label>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-brand-pink/60 px-1 uppercase tracking-wider">Password</label>
                 <Input
                   type="password"
                   placeholder="••••••••"
@@ -140,11 +147,16 @@ export default function RegisterPage() {
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   required
                   disabled={isLoading}
+                  className="bg-white/20 dark:bg-black/20 border-white/30 dark:border-white/5 focus:border-brand-purple/50 focus:ring-2 focus:ring-brand-purple/10 transition-all rounded-2xl h-12 text-foreground"
                 />
               </div>
             </CardContent>
-            <CardFooter className="flex flex-col gap-4">
-              <Button type="submit" className="w-full h-12 text-lg rounded-xl" disabled={isLoading}>
+            <CardFooter className="flex flex-col gap-6 pt-2">
+              <Button 
+                type="submit" 
+                className="w-full h-12 text-lg font-semibold rounded-2xl bg-gradient-to-r from-brand-pink/80 to-brand-pink hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-brand-pink/20 text-white" 
+                disabled={isLoading}
+              >
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -154,12 +166,12 @@ export default function RegisterPage() {
                   "Create Account"
                 )}
               </Button>
-              <div className="text-sm text-center text-text-secondary">
+              <p className="text-center text-sm text-text-secondary/70">
                 Already have an account?{" "}
-                <Link href="/login" className="text-text-primary font-medium hover:underline">
+                <Link href="/login" className="text-brand-purple font-semibold hover:text-brand-pink transition-colors underline-offset-4 hover:underline">
                   Sign In
                 </Link>
-              </div>
+              </p>
             </CardFooter>
           </form>
         </Card>

@@ -16,7 +16,7 @@ export function TrustSection() {
   }, [])
 
   return (
-    <section className="bg-[#0D0D0D] text-white py-24 px-6 overflow-hidden">
+    <section className="relative py-24 px-6 overflow-hidden">
       <div className="max-w-[1440px] mx-auto text-center relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -24,10 +24,11 @@ export function TrustSection() {
           viewport={{ once: true }}
           className="space-y-6 mb-20"
         >
-          <h2 className="text-4xl md:text-6xl font-bold tracking-tight">
-            Millions of voices. One safe space.
+          <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-foreground">
+            Millions of voices. <br/>
+            <span className="bg-gradient-to-r from-brand-pink to-brand-purple bg-clip-text text-transparent">One safe space.</span>
           </h2>
-          <p className="text-xl text-[#A1A1AA] max-w-[700px] mx-auto">
+          <p className="text-xl text-text-secondary/80 font-medium max-w-[700px] mx-auto">
             People around the world are opening up and feeling heard.
           </p>
         </motion.div>
@@ -35,9 +36,9 @@ export function TrustSection() {
         {/* Visual: Dotted Map with Nodes */}
         <div className="relative h-[400px] w-full max-w-[1000px] mx-auto">
           {/* Mock Dotted Map background */}
-          <div className="absolute inset-0 opacity-20" 
+          <div className="absolute inset-0 opacity-10" 
                style={{ 
-                 backgroundImage: 'radial-gradient(circle, #A1A1AA 1px, transparent 1px)', 
+                 backgroundImage: 'radial-gradient(circle, #db2777 1px, transparent 1px)', 
                  backgroundSize: '30px 30px' 
                }} 
           />
@@ -47,14 +48,14 @@ export function TrustSection() {
             <motion.div
               key={i}
               initial={{ opacity: 0, scale: 0 }}
-              whileInView={{ opacity: [0.4, 0.8, 0.4], scale: [1, 1.2, 1] }}
+              whileInView={{ opacity: [0.3, 0.6, 0.3], scale: [1, 1.3, 1] }}
               viewport={{ once: true }}
               transition={{ 
                 duration: node.duration, 
                 repeat: Infinity, 
                 delay: node.delay 
               }}
-              className="absolute w-2 h-2 bg-white rounded-full blur-[1px] shadow-[0_0_8px_rgba(255,255,255,0.8)]"
+              className="absolute w-2.5 h-2.5 bg-brand-pink rounded-full blur-[1px] shadow-[0_0_12px_rgba(219,39,119,0.5)]"
               style={{ 
                 top: node.top, 
                 left: node.left 
@@ -75,10 +76,10 @@ export function TrustSection() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.2 }}
-                className="bg-[#1A1A1A] border border-[#27272A] px-6 py-3 rounded-full flex flex-col items-center backdrop-blur-sm"
+                className="bg-white/40 dark:bg-white/5 border border-white/40 dark:border-white/10 px-8 py-4 rounded-[24px] flex flex-col items-center backdrop-blur-xl shadow-xl shadow-brand-pink/5"
               >
-                <span className="text-2xl font-bold">{stat.label}</span>
-                <span className="text-xs text-[#A1A1AA] uppercase tracking-widest">{stat.text}</span>
+                <span className="text-3xl font-black bg-gradient-to-br from-brand-pink to-brand-purple bg-clip-text text-transparent">{stat.label}</span>
+                <span className="text-[10px] font-bold text-text-secondary/60 uppercase tracking-[0.2em]">{stat.text}</span>
               </motion.div>
             ))}
           </div>

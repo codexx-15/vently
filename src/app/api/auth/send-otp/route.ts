@@ -27,28 +27,36 @@ export async function POST(req: Request) {
 
     // Send OTP via Brevo
     const brevoApiKey = process.env.BREVO_API_KEY;
+    
+    if (!brevoApiKey) {
+      console.error('CRITICAL: BREVO_API_KEY is missing from process.env');
+      return NextResponse.json({ error: 'Server configuration error: API key missing' }, { status: 500 });
+    }
+
     const response = await fetch('https://api.brevo.com/v3/smtp/email', {
       method: 'POST',
       headers: {
-        'accept': 'application/json',
-        'api-key': brevoApiKey!,
+        'api-key': brevoApiKey.trim(),
         'content-type': 'application/json',
+        'accept': 'application/json'
       },
       body: JSON.stringify({
-        sender: { name: 'Vently', email: 'no-reply@vently.com' },
+        sender: { name: 'Vently Support', email: 'codexx299@gmail.com' },
         to: [{ email: user.email, name: user.name }],
-        subject: 'Your Vently Login OTP',
+        subject: 'Login Verification Code - Vently',
         htmlContent: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; rounded: 8px;">
-            <h2 style="color: #333; text-align: center;">Welcome to Vently</h2>
-            <p style="font-size: 16px; color: #555;">Hello ${user.name},</p>
-            <p style="font-size: 16px; color: #555;">Your one-time password (OTP) for login is:</p>
-            <div style="background-color: #f4f4f4; padding: 20px; text-align: center; font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #000; margin: 20px 0;">
+          <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 500px; margin: 40px auto; padding: 40px; border-radius: 24px; background: #ffffff; border: 1px solid #f0f0f0; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+            <div style="text-align: center; margin-bottom: 30px;">
+              <h1 style="color: #000; font-size: 28px; margin: 0; font-weight: 800; letter-spacing: -0.5px;">Vently</h1>
+            </div>
+            <p style="font-size: 16px; color: #666; line-height: 1.6; margin-bottom: 24px;">Hi ${user.name}, use the code below to sign in to your account. This code will expire in 10 minutes.</p>
+            <div style="background: #f8f9fa; border-radius: 16px; padding: 32px; text-align: center; font-size: 36px; font-weight: 700; color: #000; letter-spacing: 12px; margin-bottom: 24px; border: 1px solid #eeeeee;">
               ${otp}
             </div>
-            <p style="font-size: 14px; color: #888;">This OTP is valid for 10 minutes. If you did not request this, please ignore this email.</p>
-            <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-            <p style="font-size: 12px; color: #aaa; text-align: center;">© 2024 Vently. All rights reserved.</p>
+            <p style="font-size: 13px; color: #999; text-align: center; margin-bottom: 30px;">If you didn't request this code, you can safely ignore this email.</p>
+            <div style="border-top: 1px solid #eeeeee; padding-top: 24px; text-align: center;">
+              <p style="font-size: 12px; color: #bbbbbb; margin: 0;">© 2024 Vently. All rights reserved.</p>
+            </div>
           </div>
         `,
       }),
@@ -57,8 +65,11 @@ export async function POST(req: Request) {
     const data = await response.json();
 
     if (!response.ok) {
-      console.error('Brevo API error:', data);
-      throw new Error(data.message || 'Failed to send email');
+      console.error('BREVO ERROR RESPONSE:', JSON.stringify(data, null, 2));
+      return NextResponse.json({ 
+        error: `Brevo API Error: ${data.message || 'Invalid API Key'}`,
+        debug: data
+      }, { status: response.status });
     }
 
     return NextResponse.json({ message: 'OTP sent successfully' });

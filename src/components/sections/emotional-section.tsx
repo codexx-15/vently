@@ -21,18 +21,24 @@ export function EmotionalSection() {
     <section className="py-24 px-6 max-w-[1440px] mx-auto overflow-hidden">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
         {/* Left: Slider */}
-        <div className="relative aspect-square w-full max-w-[500px] mx-auto rounded-[20px] overflow-hidden shadow-2xl">
+        <div className="relative aspect-square w-full max-w-[500px] mx-auto rounded-[20px] overflow-hidden shadow-2xl bg-secondary">
           <AnimatePresence mode="wait">
-            <motion.img
-              key={currentIndex}
-              src={images[currentIndex]}
-              alt={`Emotional scene ${currentIndex + 1}`}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.5, ease: "easeInOut" }}
-              className="absolute inset-0 w-full h-full object-cover grayscale opacity-80"
-            />
+            {images[currentIndex] ? (
+              <motion.img
+                key={currentIndex}
+                src={images[currentIndex]}
+                alt={`Emotional scene ${currentIndex + 1}`}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+                className="absolute inset-0 w-full h-full object-cover grayscale opacity-80"
+              />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center opacity-20">
+                <div className="w-12 h-12 rounded-full border-2 border-current animate-pulse" />
+              </div>
+            )}
           </AnimatePresence>
           <div className="absolute inset-0 bg-background/20 mix-blend-overlay pointer-events-none" />
         </div>

@@ -21,8 +21,14 @@ export function Testimonials() {
           >
             <Card className="h-full border-none bg-secondary/50 backdrop-blur-sm">
               <CardContent className="pt-8 flex flex-col items-center text-center space-y-6">
-                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-border shadow-sm">
-                  <img src={t.userAvatar} alt={t.userName} className="w-full h-full object-cover" />
+                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-border shadow-sm bg-secondary">
+                  {t.userAvatar ? (
+                    <img src={t.userAvatar} alt={t.userName} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-text-secondary font-bold text-xl">
+                      {t.userName.charAt(0)}
+                    </div>
+                  )}
                 </div>
                 <p className="text-lg italic text-text-primary leading-relaxed">
                   &quot;{t.content}&quot;

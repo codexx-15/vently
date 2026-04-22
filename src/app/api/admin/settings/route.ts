@@ -10,7 +10,16 @@ export async function GET() {
     if (!settings) {
       // Create default settings if not exists
       settings = await Settings.create({
+        siteName: "Vently",
+        logo: "",
+        footerText: "Your safe space to vent, reflect, and be understood. Built for a calmer, more human connection.",
+        socialLinks: {
+          instagram: "#",
+          twitter: "#",
+          linkedin: "#"
+        },
         heroImages: ["https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=1200&auto=format&fit=crop"],
+        heroVideos: [],
         emotionalImages: [
           "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=1200&auto=format&fit=crop",
           "https://images.unsplash.com/photo-1516062423079-7ca13cdc7f5a?q=80&w=1200&auto=format&fit=crop",

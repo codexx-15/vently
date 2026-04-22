@@ -1,18 +1,41 @@
+"use client"
+
 import Link from "next/link"
 import { Logo } from "@/components/ui/logo"
+import { useGlobalState } from "@/lib/store"
+import { Globe as Instagram, MessageCircle as Twitter, Share2 as Linkedin } from "lucide-react"
 
 export function Footer() {
+  const { settings } = useGlobalState()
+
   return (
     <footer className="py-24 px-6 border-t border-border bg-card">
       <div className="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
         <div className="col-span-1 md:col-span-2 space-y-6">
-          <Link href="/" className="inline-block">
-            <Logo />
+          <Link href="/" className="flex items-center gap-2 group transition-all">
+            {settings?.logo && settings.logo.trim() !== "" ? (
+              <img src={settings.logo} alt={settings.siteName} className="h-8 w-auto" />
+            ) : (
+              <Logo />
+            )}
+            <span className="text-2xl font-black tracking-tighter text-foreground group-hover:text-brand-pink transition-colors">
+              {settings?.siteName || "Vently"}
+            </span>
           </Link>
-          <p className="text-text-secondary max-w-[300px]">
-            Your safe space to vent, reflect, and be understood. 
-            Built for a calmer, more human connection.
+          <p className="text-text-secondary max-w-[400px]">
+            {settings?.footerText || "Your safe space to vent, reflect, and be understood."}
           </p>
+          <div className="flex gap-4">
+            <a href={settings?.socialLinks?.instagram || "#"} target="_blank" rel="noopener noreferrer" className="text-text-secondary hover:text-brand-pink transition-colors">
+              <Instagram className="w-5 h-5" />
+            </a>
+            <a href={settings?.socialLinks?.twitter || "#"} target="_blank" rel="noopener noreferrer" className="text-text-secondary hover:text-brand-pink transition-colors">
+              <Twitter className="w-5 h-5" />
+            </a>
+            <a href={settings?.socialLinks?.linkedin || "#"} target="_blank" rel="noopener noreferrer" className="text-text-secondary hover:text-brand-pink transition-colors">
+              <Linkedin className="w-5 h-5" />
+            </a>
+          </div>
         </div>
         
         <div className="space-y-6">
