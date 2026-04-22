@@ -264,19 +264,30 @@ function YogaSection() {
 function MeditationSection() {
   const [video, setVideo] = useState<string | null>(null)
   const [meditations, setMeditations] = useState<any[]>([])
-  const [activeMood, setActiveTab] = useState("Anxiety")
+  const [activeMood, setActiveTab] = useState("All")
 
   React.useEffect(() => {
     fetch('/api/meditation').then(res => res.json()).then(setMeditations)
   }, [])
 
-  const filtered = meditations.filter(m => m.mood === activeMood)
-  const moods = ["Anxiety", "Sadness", "Overthinking", "Sleep", "Energy"]
+  const filtered = activeMood === "All" ? meditations : meditations.filter(m => m.mood === activeMood)
+  const moods = ["All", "Anxiety", "Sadness", "Overthinking", "Sleep", "Energy"]
 
   const getYoutubeId = (url: string) => {
+    if (!url) return null
+    if (url.includes('spotify.com')) return null // Handle Spotify separately
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/
     const match = url.match(regExp)
     return (match && match[2].length === 11) ? match[2] : null
+  }
+
+  const handleMeditationClick = (m: any) => {
+    const youtubeId = getYoutubeId(m.youtubeLink)
+    if (youtubeId) {
+      setVideo(youtubeId)
+    } else if (m.youtubeLink && (m.youtubeLink.includes('spotify.com') || m.youtubeLink.includes('http'))) {
+      window.open(m.youtubeLink, '_blank')
+    }
   }
 
   return (
@@ -307,7 +318,7 @@ function MeditationSection() {
           >
             <Card 
               className="glass-card overflow-hidden group h-full flex flex-col rounded-[32px] cursor-pointer" 
-              onClick={() => setVideo(getYoutubeId(m.youtubeLink))}
+              onClick={() => handleMeditationClick(m)}
             >
               <div className="aspect-video relative overflow-hidden bg-secondary">
                 {Array.isArray(m.images) && m.images.length > 0 && m.images[0] ? (
@@ -334,7 +345,11 @@ function MeditationSection() {
                 )}
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                   <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/40">
-                    <Play fill="currentColor" size={24} />
+                    {m.youtubeLink && m.youtubeLink.includes('spotify.com') ? (
+                      <ExternalLink size={24} />
+                    ) : (
+                      <Play fill="currentColor" size={24} />
+                    )}
                   </div>
                 </div>
                 <div className="absolute bottom-4 left-4 px-3 py-1 rounded-full bg-black/40 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-widest">

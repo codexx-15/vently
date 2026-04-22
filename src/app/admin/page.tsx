@@ -998,7 +998,7 @@ export default function AdminPage() {
                           />
                           <div className="flex gap-2">
                             <Input 
-                              placeholder="YouTube Link or Video URL" 
+                              placeholder="External Link (YouTube, Spotify, etc.)" 
                               value={editingItem ? editingItem.youtubeLink : newMeditation.youtubeLink}
                               onChange={e => editingItem ? setEditingItem({...editingItem, youtubeLink: e.target.value}) : setNewMeditation({...newMeditation, youtubeLink: e.target.value})}
                               required
