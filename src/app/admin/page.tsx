@@ -500,12 +500,9 @@ export default function AdminPage() {
                             {settings.logo ? <img src={settings.logo} className="w-full h-full object-contain" alt="Logo" /> : <Plus className="w-6 h-6 opacity-20" />}
                           </div>
                           <div className="flex-1 flex gap-2">
-                            <Input 
-                              value={settings.logo || ""} 
-                              onChange={(e) => handleGeneralSettingUpdate('logo', e.target.value)}
-                              placeholder="Logo URL"
-                              className="flex-1"
-                            />
+                            <div className="flex-1 px-3 py-2 rounded-md border border-input bg-background text-sm text-text-secondary italic">
+                              {settings.logo ? settings.logo.split('/').pop() : "No file uploaded"}
+                            </div>
                             <label className="cursor-pointer bg-secondary hover:bg-secondary/80 p-2 rounded-lg transition-colors flex items-center justify-center min-w-[40px]">
                               {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
                               <input type="file" className="hidden" accept="image/*" onChange={e => handleFileUpload(e, 'logo')} disabled={isUploading} />
@@ -586,12 +583,9 @@ export default function AdminPage() {
                             {video ? <video src={video} className="w-full h-full object-cover" /> : <Loader2 className="w-4 h-4 opacity-20" />}
                           </div>
                           <div className="flex-1 flex gap-2">
-                            <Input 
-                              value={video} 
-                              onChange={(e) => handleUpdateVideo('hero', i, e.target.value)}
-                              placeholder="Video URL"
-                              className="flex-1"
-                            />
+                            <div className="flex-1 px-3 py-2 rounded-md border border-input bg-background text-sm text-text-secondary italic overflow-hidden text-ellipsis whitespace-nowrap">
+                              {video ? video.split('/').pop() : "No video uploaded"}
+                            </div>
                             <label className="cursor-pointer bg-secondary hover:bg-secondary/80 p-2 rounded-lg transition-colors flex items-center justify-center min-w-[40px]">
                               {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
                               <input type="file" className="hidden" accept="video/*" onChange={e => handleFileUpload(e, 'hero-video', i)} disabled={isUploading} />
@@ -633,12 +627,9 @@ export default function AdminPage() {
                                 )}
                               </div>
                               <div className="flex-1 flex gap-2">
-                                <Input 
-                                  value={img} 
-                                  onChange={(e) => handleUpdateImage('hero', i, e.target.value)}
-                                  placeholder="Image URL"
-                                  className="flex-1"
-                                />
+                                <div className="flex-1 px-3 py-2 rounded-md border border-input bg-background text-sm text-text-secondary italic overflow-hidden text-ellipsis whitespace-nowrap">
+                                  {img ? img.split('/').pop() : "No image uploaded"}
+                                </div>
                             <label className="cursor-pointer bg-secondary hover:bg-secondary/80 p-2 rounded-lg transition-colors flex items-center justify-center min-w-[40px]">
                               {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
                               <input type="file" className="hidden" accept="image/*" onChange={e => handleFileUpload(e, 'hero', i)} disabled={isUploading} />
@@ -681,12 +672,9 @@ export default function AdminPage() {
                             )}
                           </div>
                           <div className="flex-1 flex gap-2">
-                            <Input 
-                              value={img} 
-                              onChange={(e) => handleUpdateImage('emotional', i, e.target.value)}
-                              placeholder="Image URL"
-                              className="flex-1"
-                            />
+                            <div className="flex-1 px-3 py-2 rounded-md border border-input bg-background text-sm text-text-secondary italic overflow-hidden text-ellipsis whitespace-nowrap">
+                              {img ? img.split('/').pop() : "No image uploaded"}
+                            </div>
                             <label className="cursor-pointer bg-secondary hover:bg-secondary/80 p-2 rounded-lg transition-colors flex items-center justify-center min-w-[40px]">
                               {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
                               <input type="file" className="hidden" accept="image/*" onChange={e => handleFileUpload(e, 'emotional', i)} disabled={isUploading} />
@@ -801,15 +789,9 @@ export default function AdminPage() {
                                       </div>
                                     )}
                                   </div>
-                                  <Input 
-                                    value={img} 
-                                    onChange={e => {
-                                      const newImages = [...(editingItem ? editingItem.images : newAsana.images)]
-                                      newImages[idx] = e.target.value
-                                      editingItem ? setEditingItem({...editingItem, images: newImages}) : setNewAsana({...newAsana, images: newImages})
-                                    }}
-                                    className="flex-1"
-                                  />
+                                  <div className="flex-1 px-3 py-2 rounded-md border border-input bg-background text-sm text-text-secondary italic overflow-hidden text-ellipsis whitespace-nowrap">
+                                    {img ? img.split('/').pop() : "No image uploaded"}
+                                  </div>
                                   <Button 
                                     type="button"
                                     variant="ghost" 
@@ -825,21 +807,9 @@ export default function AdminPage() {
                                 </div>
                               ))}
                               <div className="flex gap-2">
-                                <Input 
-                                  placeholder="Add image URL" 
-                                  onKeyDown={e => {
-                                    if (e.key === 'Enter') {
-                                      e.preventDefault()
-                                      const val = (e.target as HTMLInputElement).value
-                                      if (val) {
-                                        const currentImages = editingItem ? (editingItem.images || []) : newAsana.images
-                                        editingItem ? setEditingItem({...editingItem, images: [...currentImages, val]}) : setNewAsana({...newAsana, images: [...currentImages, val]})
-                                        ;(e.target as HTMLInputElement).value = ""
-                                      }
-                                    }
-                                  }}
-                                  className="flex-1"
-                                />
+                                <div className="flex-1 px-3 py-2 rounded-md border border-dashed border-input bg-background/50 text-xs text-text-secondary flex items-center justify-center italic">
+                                  Click upload to add new image
+                                </div>
                                 <label className="cursor-pointer bg-secondary hover:bg-secondary/80 p-2 rounded-lg transition-colors flex items-center justify-center min-w-[40px]">
                                   {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
                                   <input type="file" className="hidden" accept="image/*" onChange={e => handleFileUpload(e, 'yoga')} disabled={isUploading} />
@@ -989,15 +959,9 @@ export default function AdminPage() {
                                       </div>
                                     )}
                                   </div>
-                                  <Input 
-                                    value={img} 
-                                    onChange={e => {
-                                      const newImages = [...(editingItem ? editingItem.images : newMeditation.images)]
-                                      newImages[idx] = e.target.value
-                                      editingItem ? setEditingItem({...editingItem, images: newImages}) : setNewMeditation({...newMeditation, images: newImages})
-                                    }}
-                                    className="flex-1"
-                                  />
+                                  <div className="flex-1 px-3 py-2 rounded-md border border-input bg-background text-sm text-text-secondary italic overflow-hidden text-ellipsis whitespace-nowrap">
+                                    {img ? img.split('/').pop() : "No image uploaded"}
+                                  </div>
                                   <Button 
                                     type="button"
                                     variant="ghost" 
@@ -1013,21 +977,9 @@ export default function AdminPage() {
                                 </div>
                               ))}
                               <div className="flex gap-2">
-                                <Input 
-                                  placeholder="Add image URL" 
-                                  onKeyDown={e => {
-                                    if (e.key === 'Enter') {
-                                      e.preventDefault()
-                                      const val = (e.target as HTMLInputElement).value
-                                      if (val) {
-                                        const currentImages = editingItem ? (editingItem.images || []) : newMeditation.images
-                                        editingItem ? setEditingItem({...editingItem, images: [...currentImages, val]}) : setNewMeditation({...newMeditation, images: [...currentImages, val]})
-                                        ;(e.target as HTMLInputElement).value = ""
-                                      }
-                                    }
-                                  }}
-                                  className="flex-1"
-                                />
+                                <div className="flex-1 px-3 py-2 rounded-md border border-dashed border-input bg-background/50 text-xs text-text-secondary flex items-center justify-center italic">
+                                  Click upload to add new image
+                                </div>
                                 <label className="cursor-pointer bg-secondary hover:bg-secondary/80 p-2 rounded-lg transition-colors flex items-center justify-center min-w-[40px]">
                                   {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
                                   <input type="file" className="hidden" accept="image/*" onChange={e => handleFileUpload(e, 'meditation')} disabled={isUploading} />
